@@ -25,7 +25,7 @@ export async function POST(req) {
         });
 
         // Define the core instructions and personality for the AI
-        const systemInstruction = `You are a helpful, professional, and smart AI assistant named OmniAI.
+        const systemInstruction = `You are Zehnix AI, a helpful, professional, and smart assistant.
     Current Date: ${currentDate}
     
     Language & Communication Rules:
