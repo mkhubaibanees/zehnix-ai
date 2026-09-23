@@ -1,26 +1,285 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Force Tailwind v4 to use class-based dark mode instead of OS media queries */
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------
+   Design tokens
+   Naming: "surface" = backgrounds (0 = base, 1 = panels/
+   sidebar, 2 = elevated cards/bubbles/popovers), "ink" =
+   foreground text, "accent" = interactive/brand color.
+   Every color used in components below is generated from
+   this block — flip .dark on the root and every utility
+   repaints, no per-component ternaries.
+--------------------------------------------------------- */
+@theme {
+  /* --font-inter / --font-lexend come from next/font in layout.js
+     (see layout.js) — that's what actually loads the font files.
+     These two lines just point Tailwind's font-sans / font-display
+     utilities at those loaded fonts. */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-lexend), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --color-surface: #ffffff;
+  --color-surface-1: #f7f7f8;
+  --color-surface-2: #f0f1f3;
+  --color-surface-hover: #e9eaec;
+  --color-border: #e5e5e9;
+
+  --color-ink: #1b1c1f;
+  --color-ink-muted: #6b6c72;
+  --color-ink-faint: #a2a3a9;
+
+  --color-accent: #3f6df2;
+  --color-accent-ink: #ffffff;
+  --color-accent-2: #8b5cf6;
+  --color-accent-soft: #eef2ff;
+
+  --color-danger: #e5484d;
+  --color-danger-soft: #fdecec;
+
+  --animate-fade-in: fade-in 0.25s ease-out;
+  --animate-fade-up: fade-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-blob: blob-spin 14s linear infinite;
+  --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  /* Main chat background pitch black (#0f0f0f) */
+  --color-surface: #0f0f0f;
+  /* Sidebar and panels lighter gray (#1f1f1f) */
+  --color-surface-1: #1f1f1f;
+  /* Hover states and cards slightly lighter than sidebar */
+  --color-surface-2: #2a2a2a;
+  --color-surface-hover: #333333;
+  --color-border: #333333;
+
+  --color-ink: #ececf0;
+  --color-ink-muted: #9b9ca4;
+  --color-ink-faint: #6b6c74;
+
+  --color-accent: #6d8cf7;
+  --color-accent-ink: #0b0d12;
+  --color-accent-2: #a78bfa;
+  --color-accent-soft: #1a2140;
+
+  --color-danger: #f2555a;
+  --color-danger-soft: #2a1517;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html,
+body {
+  height: 100%;
+  font-family: var(--font-sans);
+  /* Claude/Gemini/ChatGPT all sit around medium (500) for body
+     text, not the browser-default 400 — it reads a little
+     firmer without tipping into "everything is bold". Headings
+     already use font-semibold on top of this. */
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Secondary/tertiary text stays lighter than the 500 base so
+   the weight itself carries hierarchy — timestamps, helper
+   text, placeholders, disabled states. */
+.text-ink-muted,
+.text-ink-faint,
+::placeholder {
+  font-weight: 400;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-faint) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-ink-faint);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+
+
+/* ---------------------------------------------------------
+   Signature element: a slowly rotating two-tone gradient
+   "orb" used as the assistant's avatar, instead of a static
+   emoji or letter mark.
+--------------------------------------------------------- */
+.ai-orb {
+  position: relative;
+  background: conic-gradient(from 0deg,
+      var(--color-accent),
+      var(--color-accent-2),
+      var(--color-accent));
+  animation: var(--animate-blob);
+}
+
+.ai-orb::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  background: var(--color-surface);
+}
+
+@keyframes blob-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Typing indicator dots */
+.typing-dot {
+  animation: var(--animate-pulse-soft);
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* ---------------------------------------------------------
+   Markdown content inside assistant messages
+--------------------------------------------------------- */
+.md-content {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--color-ink);
+}
+
+.md-content>*+* {
+  margin-top: 0.85em;
+}
+
+.md-content p {
+  margin: 0;
+}
+
+.md-content h1,
+.md-content h2,
+.md-content h3 {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.md-content h1 {
+  font-size: 1.3em;
+}
+
+.md-content h2 {
+  font-size: 1.15em;
+}
+
+.md-content h3 {
+  font-size: 1.05em;
+}
+
+.md-content ul,
+.md-content ol {
+  padding-left: 1.4em;
+}
+
+.md-content li+li {
+  margin-top: 0.3em;
+}
+
+.md-content li {
+  margin: 0;
+}
+
+.md-content a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.md-content blockquote {
+  border-left: 3px solid var(--color-border);
+  padding-left: 0.9em;
+  color: var(--color-ink-muted);
+}
+
+.md-content code:not(pre code) {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  padding: 0.1em 0.4em;
+  border-radius: 6px;
+  font-size: 0.85em;
+  font-weight: 400;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+.md-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.md-content th,
+.md-content td {
+  border: 1px solid var(--color-border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.md-content th {
+  background: var(--color-surface-2);
+  font-weight: 600;
+}
+
+.md-content hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
 }
