@@ -230,7 +230,7 @@ export default function ChatInput({
         {/* Footer Area with Dynamic Rate Limit Tracker */}
         <div className="flex items-center justify-between mt-2.5 px-2">
           <p className="text-xs text-ink-faint">
-            Developed and maintained by <a href="https://www.linkedin.com/in/khubaib-anees-209076266" target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:underline transition-all">Khubaib Anees</a>.
+            Developed and maintained by Khubaib Anees.
           </p>
 
           <div className={`flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full font-medium transition-all ${isRateLimited ? "bg-danger-soft text-danger border border-danger/20 animate-pulse-soft" : requestCount > 0 ? "bg-surface-2 text-ink-muted border border-border" : "opacity-0 pointer-events-none"}`}>
