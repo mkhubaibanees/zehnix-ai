@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "Zehnix AI",
   description: "Zehnix AI — your everyday AI assistant.",
+  openGraph: {
+    images: ['/og-image.JPG'], 
+  },
 };
 
 export default function RootLayout({ children }) {
